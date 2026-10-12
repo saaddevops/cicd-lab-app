@@ -17,17 +17,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Debug OIDC claims
-        run: |
-          python3 -c "
-          import os,json,base64,urllib.request
-          req=urllib.request.Request(os.environ['ACTIONS_ID_TOKEN_REQUEST_URL']+'&audience=sts.amazonaws.com',headers={'Authorization':'bearer '+os.environ['ACTIONS_ID_TOKEN_REQUEST_TOKEN']})
-          t=json.load(urllib.request.urlopen(req))['value']
-          p=t.split('.')[1]; p+='='*(-len(p)%4)
-          c=json.loads(base64.urlsafe_b64decode(p))
-          print({k:c.get(k) for k in ('sub','aud','iss','repository','ref')})
-          "
-
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::318630425608:role/gha-ecr-push
